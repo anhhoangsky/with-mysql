@@ -1,0 +1,38 @@
+{
+  "name": "with-mysql",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@bumaga/tabs": "^0.2.0",
+    "strapi": "3.5.3",
+    "strapi-admin": "3.5.3",
+    "strapi-utils": "3.5.3",
+    "strapi-plugin-content-type-builder": "3.5.3",
+    "strapi-plugin-content-manager": "3.5.3",
+    "strapi-plugin-users-permissions": "3.5.3",
+    "strapi-plugin-email": "3.5.3",
+    "strapi-plugin-upload": "3.5.3",
+    "strapi-connector-bookshelf": "3.5.3",
+    "knex": "0.21.18",
+    "mysql": "2.18.1"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "65c4aa72-afef-4e9e-b7d1-4c7d177e27ae"
+  },
+  "engines": {
+    "node": ">=10.16.0 <=14.x.x",
+    "npm": "^6.0.0"
+  },
+  "license": "MIT"
+}

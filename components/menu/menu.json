@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_menu_menus",
+  "info": {
+    "name": "menu",
+    "icon": "align-center"
+  },
+  "options": {},
+  "attributes": {
+    "itemname": {
+      "type": "string"
+    },
+    "price": {
+      "type": "float"
+    }
+  }
+}

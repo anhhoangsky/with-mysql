@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "customtables",
+  "info": {
+    "name": "customtable",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "parentid": {
+      "type": "string"
+    },
+    "menu": {
+      "type": "component",
+      "repeatable": true,
+      "component": "menu.menu"
+    }
+  }
+}
