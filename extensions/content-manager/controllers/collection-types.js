@@ -206,13 +206,12 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { id, model } = ctx.params;
     const { body } = ctx.request;
-    // console.log(body);
     const entityManager = getService("entity-manager");
     const permissionChecker = getService("permission-checker").create({
       userAbility,
       model,
     });
-
+    console.log(body);
     if (permissionChecker.cannot.update()) {
       return ctx.forbidden();
     }
@@ -233,15 +232,50 @@ module.exports = {
 
     const sanitizeFn = pipe([pickWritables, pickPermittedFields, setCreator]);
 
-    await wrapBadRequest(async () => {
-      const updatedEntity = await entityManager.update(
-        entity,
-        sanitizeFn(body),
-        model
-      );
+    let record = {};
+    const another = [];
+    // let parentid = "-1";
+    console.log(model);
 
-      ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
-    })();
+    for (var key in body) {
+      const n = key.lastIndexOf("__");
+      if (n != -1) {
+        const label = key.substring(0, n);
+        const locale = key.substring(n + 2);
+        const value = body[key];
+        if (record[locale] === undefined) {
+          record[locale] = {};
+          record[locale][label] = value;
+          record[locale].locale = locale;
+          // record[locale].parentid = parentid;
+        } else {
+          record[locale][label] = value;
+          record[locale].locale = locale;
+          // record[locale].parentid = parentid;
+        }
+      } else {
+        another[key] = body[key];
+      }
+    }
+
+    if (Object.keys(another).length !== 0) {
+      for (var key in record) {
+        record[key] = { ...record[key], ...another };
+      }
+    }
+    for (var bd in record) {
+      await wrapBadRequest(async () => {
+        // console.log(record["en"]);
+        const updatedEntity = await entityManager.update(
+          entity,
+          sanitizeFn(record["en"]),
+          model
+        );
+
+        // ctx.body = record[bd];
+        ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+      })();
+    }
   },
 
   async delete(ctx) {

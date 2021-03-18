@@ -186,18 +186,18 @@ const wrapcreate = (props) => {
     </Panel>
   );
 
-  const onInitEditView = (arrLanguage) => {
+  const onInitEditView = useCallback((arrLanguage) => {
     defaultTab = arrLanguage.map(makeDefaultTab);
     defaultPanel = arrLanguage.map(makeDefaultPanel);
     setTabs(defaultTab);
     setPanel(defaultPanel);
-  };
+  }, []);
   const api = useContext(EditViewDataManagerContext);
   if (location != "/create") {
     useEffect(() => {
       if (api.initialData.international != undefined)
         onInitEditView(api.initialData.international);
-    }, [compTabs, compPanels, api.initialData]);
+    }, [compTabs, compPanels, api.initialData, onInitEditView]);
   } else {
     defaultTab = [
       <Tab key={`tab_default`} isAdd={false}>

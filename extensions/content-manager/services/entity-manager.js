@@ -115,7 +115,7 @@ module.exports = {
   update(entity, body, model) {
     const params = { id: entity.id };
     const publishData = omitPublishedAtField(body);
-
+    // console.log(entity, body, model);
     return strapi.entityService.update(
       { params, data: publishData },
       { model }
