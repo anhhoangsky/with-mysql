@@ -211,7 +211,7 @@ module.exports = {
       userAbility,
       model,
     });
-    console.log(body);
+    // console.log(body);
     if (permissionChecker.cannot.update()) {
       return ctx.forbidden();
     }
@@ -235,7 +235,7 @@ module.exports = {
     let record = {};
     const another = [];
     // let parentid = "-1";
-    console.log(model);
+    // console.log(model);
 
     for (var key in body) {
       const n = key.lastIndexOf("__");
@@ -264,11 +264,15 @@ module.exports = {
       }
     }
     for (var bd in record) {
+      const cusEntity = await entityManager.findOneWithCreatorRoles(
+        record[bd].id,
+        model
+      );
       await wrapBadRequest(async () => {
-        // console.log(record["en"]);
+        // console.log(record["en"], "i");
         const updatedEntity = await entityManager.update(
-          entity,
-          sanitizeFn(record["en"]),
+          cusEntity,
+          sanitizeFn(record[bd]),
           model
         );
 

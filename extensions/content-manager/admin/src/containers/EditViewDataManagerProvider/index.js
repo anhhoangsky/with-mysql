@@ -272,6 +272,8 @@ const EditViewDataManagerProvider = ({
     (data) => {
       // First we need to remove the added keys needed for the dnd
       const preparedData = removeKeyInObject(cloneDeep(data), "__temp_key__");
+      // clean mất component
+      return preparedData;
       // Then we need to apply our helper
       const cleanedData = cleanData(
         preparedData,
@@ -302,6 +304,7 @@ const EditViewDataManagerProvider = ({
         await yupSchema.validate(modifiedData, { abortEarly: false });
 
         const formData = createFormData(modifiedData);
+        console.log(formData);
 
         if (isCreatingEntry) {
           onPost(formData, trackerProperty);

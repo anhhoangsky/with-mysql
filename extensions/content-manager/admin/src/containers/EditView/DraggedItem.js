@@ -201,7 +201,6 @@ const DraggedItem = ({
                             />
                           );
                         }
-
                         return (
                           <div key={name} className={`col-${size}`}>
                             <Inputs

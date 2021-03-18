@@ -164,6 +164,7 @@ const wrapcreate = (props) => {
                     />
                   );
                 }
+
                 return (
                   <div className={`col-${size}`} key={name}>
                     <InputCreate

@@ -14,16 +14,16 @@
     "title": {
       "type": "string"
     },
+    "menu": {
+      "type": "component",
+      "repeatable": true,
+      "component": "menu.menu"
+    },
     "locale": {
       "type": "string"
     },
     "parentid": {
       "type": "string"
-    },
-    "menu": {
-      "type": "component",
-      "repeatable": true,
-      "component": "menu.menu"
     }
   }
 }
