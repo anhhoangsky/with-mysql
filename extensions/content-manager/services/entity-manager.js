@@ -48,6 +48,7 @@ module.exports = {
   },
 
   find(params, model, populate) {
+    // console.log(model);
     return strapi.entityService.find({ params, populate }, { model });
   },
 
@@ -56,7 +57,7 @@ module.exports = {
   },
 
   findWithRelationCounts(params, model, populate) {
-    // console.log(params, model, populate);
+    // console.log(params, "find");
     return strapi.entityService.findWithRelationCounts(
       { params, populate },
       { model }
@@ -72,6 +73,7 @@ module.exports = {
   },
 
   searchWithRelationCounts(params, model, populate) {
+    console.log(params, "search");
     return strapi.entityService.searchWithRelationCounts(
       { params, populate },
       { model }
@@ -91,7 +93,7 @@ module.exports = {
 
   async findOneWithCreatorRoles(id, model, populate) {
     const entity = await this.findOne(id, model, populate);
-
+    // console.log(entity, populate);
     if (!entity) {
       return entity;
     }

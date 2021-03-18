@@ -100,6 +100,10 @@ const wrapcreate = (props) => {
   const Tab = ({ children, isAdd }) => {
     const { isActive, onClick } = useTabState(false);
     const api = useContext(EditViewDataManagerContext);
+    // console.log(api);
+    // useEffect(() => {
+    //   if (isAdd) onClick();
+    // }, [isActive]);
     return (
       <TabWrapper
         type="button"
@@ -118,24 +122,26 @@ const wrapcreate = (props) => {
     window.navigator.language ||
     window.navigator.userLanguage ||
     "en";
+
   let defaultTab;
   let defaultPanel;
-  defaultTab = (
-    <Tab key={`tab_${locale}`} isAdd={false}>
-      {languageNativeNames[locale]}
-    </Tab>
-  );
-  defaultPanel = (
-    <Panel key={`panel_${locale}`}>
+  const makeDefaultTab = (language) => {
+    return (
+      <Tab key={`tab_${language}`} isAdd={true}>
+        {languageNativeNames[language]}
+      </Tab>
+    );
+  };
+  const makeDefaultPanel = (language) => (
+    <Panel key={`panel_${language}`}>
       {block.map((fieldsBlock, fieldsBlockIndex) => {
         return (
           <div className="row" key={fieldsBlockIndex}>
             {fieldsBlock.map(
               ({ name, size, fieldSchema, metadatas }, fieldIndex) => {
                 const isComponent = fieldSchema.type === "component";
-                if (location == "/create") {
-                  name = `${name}__${locale}`;
-                }
+                name = `${name}__${language}`;
+
                 if (isComponent) {
                   const {
                     component,
@@ -144,15 +150,10 @@ const wrapcreate = (props) => {
                     repeatable = false,
                   } = fieldSchema;
                   const componentUid = fieldSchema.component;
-                  // let newMetadatas = { ...metadatas };
-                  // newMetadatas.label = newMetadatas.label + locale;
-                  // componentFieldName.substring(
-                  //   componentFieldName.lastIndexOf("__")
-                  // );
+
                   return (
                     <Fieldcomponentcreate
-                      //cus
-                      locale={locale}
+                      locale={language}
                       key={componentUid}
                       componentUid={component}
                       isRepeatable={repeatable}
@@ -163,11 +164,9 @@ const wrapcreate = (props) => {
                     />
                   );
                 }
-
                 return (
                   <div className={`col-${size}`} key={name}>
                     <InputCreate
-                      // <Inputs
                       autoFocus={
                         blockIndex === 0 &&
                         fieldsBlockIndex === 0 &&
@@ -187,8 +186,89 @@ const wrapcreate = (props) => {
     </Panel>
   );
 
-  const [compTabs, setTabs] = useState([defaultTab]);
-  const [compPanels, setPanel] = useState([defaultPanel]);
+  const onInitEditView = (arrLanguage) => {
+    defaultTab = arrLanguage.map(makeDefaultTab);
+    defaultPanel = arrLanguage.map(makeDefaultPanel);
+    setTabs(defaultTab);
+    setPanel(defaultPanel);
+  };
+  const api = useContext(EditViewDataManagerContext);
+  if (location != "/create") {
+    useEffect(() => {
+      if (api.initialData.international != undefined)
+        onInitEditView(api.initialData.international);
+    }, [compTabs, compPanels, api.initialData]);
+  } else {
+    defaultTab = [
+      <Tab key={`tab_default`} isAdd={false}>
+        {languageNativeNames[locale]}
+      </Tab>,
+    ];
+    defaultPanel = [
+      <Panel key={`panel_default`}>
+        {block.map((fieldsBlock, fieldsBlockIndex) => {
+          return (
+            <div className="row" key={fieldsBlockIndex}>
+              {fieldsBlock.map(
+                ({ name, size, fieldSchema, metadatas }, fieldIndex) => {
+                  const isComponent = fieldSchema.type === "component";
+                  if (location == "/create") {
+                    name = `${name}__${locale}`;
+                  }
+                  if (isComponent) {
+                    const {
+                      component,
+                      max,
+                      min,
+                      repeatable = false,
+                    } = fieldSchema;
+                    const componentUid = fieldSchema.component;
+                    // let newMetadatas = { ...metadatas };
+                    // newMetadatas.label = newMetadatas.label + locale;
+                    // componentFieldName.substring(
+                    //   componentFieldName.lastIndexOf("__")
+                    // );
+                    return (
+                      <Fieldcomponentcreate
+                        //cus
+                        locale={locale}
+                        key={componentUid}
+                        componentUid={component}
+                        isRepeatable={repeatable}
+                        label={metadatas.label}
+                        max={max}
+                        min={min}
+                        name={name}
+                      />
+                    );
+                  }
+
+                  return (
+                    <div className={`col-${size}`} key={name}>
+                      <InputCreate
+                        // <Inputs
+                        autoFocus={
+                          blockIndex === 0 &&
+                          fieldsBlockIndex === 0 &&
+                          fieldIndex === 0
+                        }
+                        fieldSchema={fieldSchema}
+                        keys={name}
+                        metadatas={metadatas}
+                      />
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          );
+        })}
+      </Panel>,
+    ];
+  }
+
+  const [compTabs, setTabs] = useState(defaultTab);
+  const [compPanels, setPanel] = useState(defaultPanel);
   const onAddChild = (language) => {
     setTabs((preState) => {
       let newState = [...preState];

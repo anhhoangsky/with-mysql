@@ -75,21 +75,44 @@ module.exports = {
 
     const entity = await entityManager.findOneWithCreatorRoles(id, model);
     //customize
-    // const entity2 = await entityManager.find(
-    //   { _sort: "title:ASC", _where: [{ parentid: entity.id }] },
-    //   model
-    // );
-    // console.log(entity2);
-    if (!entity) {
-      return ctx.notFound();
-    }
+    try {
+      const entity2 = await entityManager.find(
+        { _sort: "title:ASC", _where: [{ parentid: entity.id }] },
+        model
+      );
+      // console.log(model, id);
+      entity2.unshift(entity);
+      const reducer = (acc, curr) => {
+        acc.international.push(curr.locale);
+        for (let key in curr) {
+          if (key.indexOf("_") == -1) acc[`${key}__${curr.locale}`] = curr[key];
+          else {
+            acc[key] = curr[key];
+          }
+        }
+        return acc;
+      };
+      if (!entity) {
+        return ctx.notFound();
+      }
 
-    if (permissionChecker.cannot.read(entity)) {
-      return ctx.forbidden();
-    }
+      if (permissionChecker.cannot.read(entity)) {
+        return ctx.forbidden();
+      }
+      const entity3 = entity2.reduce(reducer, { international: [] });
 
-    // ctx.body = permissionChecker.sanitizeOutput(entity);
-    ctx.body = permissionChecker.sanitizeOutput(entity);
+      ctx.body = entity3;
+    } catch (e) {
+      if (!entity) {
+        return ctx.notFound();
+      }
+
+      if (permissionChecker.cannot.read(entity)) {
+        return ctx.forbidden();
+      }
+      ctx.body = permissionChecker.sanitizeOutput(entity);
+    }
+    // end
   },
 
   async create(ctx) {
@@ -151,7 +174,7 @@ module.exports = {
         sanitizeFn(record[Object.keys(record)[0]]),
         model
       );
-      console.log(entity.id);
+      // console.log(entity.id);
       parentid = entity.id.toString();
       ctx.body = permissionChecker.sanitizeOutput(entity);
 

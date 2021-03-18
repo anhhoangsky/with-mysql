@@ -1,38 +1,45 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { get, isEmpty } from 'lodash';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Header } from '@buffetjs/custom';
-import isEqual from 'react-fast-compare';
-import { stringify } from 'qs';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { bindActionCreators, compose } from "redux";
+import { get, isEmpty } from "lodash";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useHistory, useLocation } from "react-router-dom";
+import { Header } from "@buffetjs/custom";
+import isEqual from "react-fast-compare";
+import { stringify } from "qs";
 import {
   PopUpWarning,
   request,
   CheckPermissions,
   useGlobalContext,
   useUserPermissions,
-} from 'strapi-helper-plugin';
-import pluginId from '../../pluginId';
-import pluginPermissions from '../../permissions';
-import { useQueryParams } from '../../hooks';
+} from "strapi-helper-plugin";
+import pluginId from "../../pluginId";
+import pluginPermissions from "../../permissions";
+import { useQueryParams } from "../../hooks";
 import {
   formatFiltersFromQuery,
   generatePermissionsObject,
   getRequestUrl,
   getTrad,
-} from '../../utils';
-import Container from '../../components/Container';
-import CustomTable from '../../components/CustomTable';
-import FilterPicker from '../../components/FilterPicker';
-import Search from '../../components/Search';
-import ListViewProvider from '../ListViewProvider';
-import { AddFilterCta, FilterIcon, Wrapper } from './components';
-import FieldPicker from './FieldPicker';
-import Filter from './Filter';
-import Footer from './Footer';
+} from "../../utils";
+import Container from "../../components/Container";
+import CustomTable from "../../components/CustomTable";
+import FilterPicker from "../../components/FilterPicker";
+import Search from "../../components/Search";
+import ListViewProvider from "../ListViewProvider";
+import { AddFilterCta, FilterIcon, Wrapper } from "./components";
+import FieldPicker from "./FieldPicker";
+import Filter from "./Filter";
+import Footer from "./Footer";
 import {
   getData,
   getDataSucceeded,
@@ -48,10 +55,10 @@ import {
   setLayout,
   onChangeListHeaders,
   onResetListHeaders,
-} from './actions';
-import makeSelectListView from './selectors';
+} from "./actions";
+import makeSelectListView from "./selectors";
 
-import { getAllAllowedHeaders, getFirstSortableHeader } from './utils';
+import { getAllAllowedHeaders, getFirstSortableHeader } from "./utils";
 
 /* eslint-disable react/no-array-index-key */
 
@@ -99,16 +106,18 @@ function ListView({
 
   const { emitEvent } = useGlobalContext();
   const emitEventRef = useRef(emitEvent);
-  const viewPermissions = useMemo(() => generatePermissionsObject(slug), [slug]);
+  const viewPermissions = useMemo(() => generatePermissionsObject(slug), [
+    slug,
+  ]);
   const {
     isLoading: isLoadingForPermissions,
     allowedActions: { canCreate, canRead, canUpdate, canDelete },
   } = useUserPermissions(viewPermissions);
   const defaultSort = `${defaultSortBy}:${defaultSortOrder}`;
-  const initParams = useMemo(() => ({ page: 1, pageSize: defaultPageSize, _sort: defaultSort }), [
-    defaultPageSize,
-    defaultSort,
-  ]);
+  const initParams = useMemo(
+    () => ({ page: 1, pageSize: defaultPageSize, _sort: defaultSort }),
+    [defaultPageSize, defaultSort]
+  );
   const [{ query, rawQuery }, setQuery] = useQueryParams(initParams);
 
   const { pathname } = useLocation();
@@ -118,15 +127,17 @@ function ListView({
   const [isFilterPickerOpen, setFilterPickerState] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const contentType = layout.contentType;
-  const hasDraftAndPublish = get(contentType, 'options.draftAndPublish', false);
-  const allAllowedHeaders = useMemo(() => getAllAllowedHeaders(attributes), [attributes]);
+  const hasDraftAndPublish = get(contentType, "options.draftAndPublish", false);
+  const allAllowedHeaders = useMemo(() => getAllAllowedHeaders(attributes), [
+    attributes,
+  ]);
 
   const filters = useMemo(() => {
     return formatFiltersFromQuery(query);
   }, [query]);
 
   const _sort = query._sort;
-  const _q = query._q || '';
+  const _q = query._q || "";
 
   const label = contentType.info.label;
 
@@ -134,9 +145,10 @@ function ListView({
     return rawQuery || `?${stringify(initParams, { encode: false })}`;
   }, [initParams, rawQuery]);
 
-  const firstSortableHeader = useMemo(() => getFirstSortableHeader(displayedHeaders), [
-    displayedHeaders,
-  ]);
+  const firstSortableHeader = useMemo(
+    () => getFirstSortableHeader(displayedHeaders),
+    [displayedHeaders]
+  );
 
   useEffect(() => {
     setLayout(layout);
@@ -149,7 +161,7 @@ function ListView({
 
   // Using a ref to avoid requests being fired multiple times on slug on change
   // We need it because the hook as mulitple dependencies so it may run before the permissions have checked
-  const requestUrlRef = useRef('');
+  const requestUrlRef = useRef("");
 
   const fetchData = useCallback(
     async (endPoint, abortSignal = false) => {
@@ -157,13 +169,16 @@ function ListView({
       const signal = abortSignal || new AbortController().signal;
 
       try {
-        const { results, pagination } = await request(endPoint, { method: 'GET', signal });
+        const { results, pagination } = await request(endPoint, {
+          method: "GET",
+          signal,
+        });
 
         getDataSucceeded(pagination, results);
       } catch (err) {
-        if (err.name !== 'AbortError') {
+        if (err.name !== "AbortError") {
           console.error(err);
-          strapi.notification.error(getTrad('error.model.fetch'));
+          strapi.notification.error(getTrad("error.model.fetch"));
         }
       }
     },
@@ -176,11 +191,11 @@ function ListView({
 
       if (value && displayedHeaders.length === 1) {
         strapi.notification.toggle({
-          type: 'warning',
-          message: { id: 'content-manager.notification.error.displayedFields' },
+          type: "warning",
+          message: { id: "content-manager.notification.error.displayedFields" },
         });
       } else {
-        emitEventRef.current('didChangeDisplayedFields');
+        emitEventRef.current("didChangeDisplayedFields");
 
         onChangeListHeaders({ name, value });
       }
@@ -192,54 +207,64 @@ function ListView({
     try {
       setModalLoadingState();
 
-      await request(getRequestUrl(`collection-types/${slug}/actions/bulkDelete`), {
-        method: 'POST',
-        body: { ids: entriesToDelete },
-      });
+      await request(
+        getRequestUrl(`collection-types/${slug}/actions/bulkDelete`),
+        {
+          method: "POST",
+          body: { ids: entriesToDelete },
+        }
+      );
 
       onDeleteSeveralDataSucceeded();
-      emitEventRef.current('didBulkDeleteEntries');
+      emitEventRef.current("didBulkDeleteEntries");
     } catch (err) {
       strapi.notification.error(`${pluginId}.error.record.delete`);
     }
-  }, [entriesToDelete, onDeleteSeveralDataSucceeded, slug, setModalLoadingState]);
+  }, [
+    entriesToDelete,
+    onDeleteSeveralDataSucceeded,
+    slug,
+    setModalLoadingState,
+  ]);
 
   const handleConfirmDeleteData = useCallback(async () => {
     try {
       let trackerProperty = {};
 
       if (hasDraftAndPublish) {
-        const dataToDelete = data.find(obj => obj.id.toString() === idToDelete.toString());
+        const dataToDelete = data.find(
+          (obj) => obj.id.toString() === idToDelete.toString()
+        );
         const isDraftEntry = isEmpty(dataToDelete.published_at);
-        const status = isDraftEntry ? 'draft' : 'published';
+        const status = isDraftEntry ? "draft" : "published";
 
         trackerProperty = { status };
       }
 
-      emitEventRef.current('willDeleteEntry', trackerProperty);
+      emitEventRef.current("willDeleteEntry", trackerProperty);
       setModalLoadingState();
 
       await request(getRequestUrl(`collection-types/${slug}/${idToDelete}`), {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       strapi.notification.toggle({
-        type: 'success',
+        type: "success",
         message: { id: `${pluginId}.success.record.delete` },
       });
 
       // Close the modal and refetch data
       onDeleteDataSucceeded();
-      emitEventRef.current('didDeleteEntry', trackerProperty);
+      emitEventRef.current("didDeleteEntry", trackerProperty);
     } catch (err) {
       const errorMessage = get(
         err,
-        'response.payload.message',
+        "response.payload.message",
         formatMessage({ id: `${pluginId}.error.record.delete` })
       );
 
       strapi.notification.toggle({
-        type: 'warning',
+        type: "warning",
         message: errorMessage,
       });
       // Close the modal
@@ -262,7 +287,6 @@ function ListView({
 
     const shouldSendRequest = !isLoadingForPermissions && canRead;
     const requestUrl = `/${pluginId}/collection-types/${slug}${params}`;
-
     if (shouldSendRequest && requestUrl.includes(requestUrlRef.current)) {
       fetchData(requestUrl, signal);
     }
@@ -271,9 +295,17 @@ function ListView({
       requestUrlRef.current = slug;
       abortController.abort();
     };
-  }, [isLoadingForPermissions, canRead, getData, slug, params, getDataSucceeded, fetchData]);
+  }, [
+    isLoadingForPermissions,
+    canRead,
+    getData,
+    slug,
+    params,
+    getDataSucceeded,
+    fetchData,
+  ]);
 
-  const handleClickDelete = id => {
+  const handleClickDelete = (id) => {
     setIdToDelete(id);
     toggleModalDelete();
   };
@@ -287,9 +319,9 @@ function ListView({
   }, [fetchData, didDeleteData, slug, params]);
 
   const toggleFilterPickerState = useCallback(() => {
-    setFilterPickerState(prevState => {
+    setFilterPickerState((prevState) => {
       if (!prevState) {
-        emitEventRef.current('willFilterEntries');
+        emitEventRef.current("willFilterEntries");
       }
 
       return !prevState;
@@ -305,22 +337,22 @@ function ListView({
       {
         label: formatMessage(
           {
-            id: 'content-manager.containers.List.addAnEntry',
+            id: "content-manager.containers.List.addAnEntry",
           },
           {
-            entity: label || 'Content Manager',
+            entity: label || "Content Manager",
           }
         ),
         onClick: () => {
-          const trackerProperty = hasDraftAndPublish ? { status: 'draft' } : {};
+          const trackerProperty = hasDraftAndPublish ? { status: "draft" } : {};
 
-          emitEventRef.current('willCreateEntry', trackerProperty);
+          emitEventRef.current("willCreateEntry", trackerProperty);
           push({
             pathname: `${pathname}/create`,
           });
         },
-        color: 'primary',
-        type: 'button',
+        color: "primary",
+        type: "button",
         icon: true,
         style: {
           paddingLeft: 15,
@@ -335,7 +367,7 @@ function ListView({
     /* eslint-disable indent */
     return {
       title: {
-        label: label || 'Content Manager',
+        label: label || "Content Manager",
       },
       content: canRead
         ? formatMessage(
@@ -352,8 +384,8 @@ function ListView({
     };
   }, [total, headerAction, label, canRead, formatMessage]);
 
-  const handleToggleModalDeleteAll = e => {
-    emitEventRef.current('willBulkDeleteEntries');
+  const handleToggleModalDeleteAll = (e) => {
+    emitEventRef.current("willBulkDeleteEntries");
     toggleModalDeleteAll(e);
   };
 
@@ -385,42 +417,61 @@ function ListView({
           slug={slug}
         />
         <Container className="container-fluid">
-          {!isFilterPickerOpen && <Header {...headerProps} isLoading={isLoading && canRead} />}
+          {!isFilterPickerOpen && (
+            <Header {...headerProps} isLoading={isLoading && canRead} />
+          )}
           {isSearchable && canRead && (
-            <Search changeParams={setQuery} initValue={_q} model={label} value={_q} />
+            <Search
+              changeParams={setQuery}
+              initValue={_q}
+              model={label}
+              value={_q}
+            />
           )}
           {canRead && (
             <Wrapper>
-              <div className="row" style={{ marginBottom: '5px' }}>
+              <div className="row" style={{ marginBottom: "5px" }}>
                 <div className="col-10">
-                  <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
+                  <div
+                    className="row"
+                    style={{ marginLeft: 0, marginRight: 0 }}
+                  >
                     {isFilterable && (
                       <>
-                        <AddFilterCta type="button" onClick={toggleFilterPickerState}>
+                        <AddFilterCta
+                          type="button"
+                          onClick={toggleFilterPickerState}
+                        >
                           <FilterIcon />
                           <FormattedMessage id="app.utils.filters" />
                         </AddFilterCta>
-                        {filters.map(({ filter: filterName, name, value }, key) => (
-                          <Filter
-                            contentType={contentType}
-                            filterName={filterName}
-                            filters={filters}
-                            index={key}
-                            key={key}
-                            metadatas={metadatas}
-                            name={name}
-                            toggleFilterPickerState={toggleFilterPickerState}
-                            isFilterPickerOpen={isFilterPickerOpen}
-                            setQuery={setQuery}
-                            value={value}
-                          />
-                        ))}
+                        {filters.map(
+                          ({ filter: filterName, name, value }, key) => (
+                            <Filter
+                              contentType={contentType}
+                              filterName={filterName}
+                              filters={filters}
+                              index={key}
+                              key={key}
+                              metadatas={metadatas}
+                              name={name}
+                              toggleFilterPickerState={toggleFilterPickerState}
+                              isFilterPickerOpen={isFilterPickerOpen}
+                              setQuery={setQuery}
+                              value={value}
+                            />
+                          )
+                        )}
                       </>
                     )}
                   </div>
                 </div>
                 <div className="col-2">
-                  <CheckPermissions permissions={pluginPermissions.collectionTypesConfigurations}>
+                  <CheckPermissions
+                    permissions={
+                      pluginPermissions.collectionTypesConfigurations
+                    }
+                  >
                     <FieldPicker
                       displayedHeaders={displayedHeaders}
                       items={allAllowedHeaders}
@@ -431,7 +482,7 @@ function ListView({
                   </CheckPermissions>
                 </div>
               </div>
-              <div className="row" style={{ paddingTop: '12px' }}>
+              <div className="row" style={{ paddingTop: "12px" }}>
                 <div className="col-12">
                   <CustomTable
                     data={data}
@@ -454,7 +505,7 @@ function ListView({
           isOpen={showWarningDelete}
           toggleModal={toggleModalDelete}
           content={{
-            message: getTrad('popUpWarning.bodyMessage.contentType.delete'),
+            message: getTrad("popUpWarning.bodyMessage.contentType.delete"),
           }}
           onConfirm={handleConfirmDeleteData}
           popUpWarningType="danger"
@@ -467,7 +518,7 @@ function ListView({
           content={{
             message: getTrad(
               `popUpWarning.bodyMessage.contentType.delete${
-                entriesToDelete.length > 1 ? '.all' : ''
+                entriesToDelete.length > 1 ? ".all" : ""
               }`
             ),
           }}
@@ -510,7 +561,8 @@ ListView.propTypes = {
   onDeleteDataSucceeded: PropTypes.func.isRequired,
   onDeleteSeveralDataSucceeded: PropTypes.func.isRequired,
   onResetListHeaders: PropTypes.func.isRequired,
-  pagination: PropTypes.shape({ total: PropTypes.number.isRequired }).isRequired,
+  pagination: PropTypes.shape({ total: PropTypes.number.isRequired })
+    .isRequired,
   resetProps: PropTypes.func.isRequired,
   setModalLoadingState: PropTypes.func.isRequired,
   showModalConfirmButtonLoading: PropTypes.bool.isRequired,
