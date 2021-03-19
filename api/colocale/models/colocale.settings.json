@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "colocales",
+  "info": {
+    "name": "Colocale"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "locale": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    }
+  }
+}

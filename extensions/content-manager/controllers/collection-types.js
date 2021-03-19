@@ -114,7 +114,7 @@ module.exports = {
 
       ctx.body = entity3;
     } catch (e) {
-      console.log(e.message);
+      // console.log(e.message);
       if (!entity) {
         return ctx.notFound();
       }

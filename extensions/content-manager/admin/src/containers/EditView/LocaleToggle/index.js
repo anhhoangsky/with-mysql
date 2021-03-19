@@ -4,7 +4,7 @@
  *
  */
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import cn from "classnames";
 import {
@@ -15,12 +15,12 @@ import {
 } from "reactstrap";
 import { languages, languageNativeNames } from "../../i18n";
 import Wrapper from "./Wrapper";
+import EditViewDataManagerContext from "../../../contexts/EditViewDataManager";
 
 export class LocaleToggle extends React.Component {
   // eslint-disable-line
   state = { isOpen: false, locale: "select" };
   toggle = () => this.setState((prevState) => ({ isOpen: !prevState.isOpen }));
-
   render() {
     // const {
     //   currentLocale: { locale },
@@ -29,6 +29,7 @@ export class LocaleToggle extends React.Component {
     const className = "toggle";
     // const changeLocale = this.props.changeLocale;
     const style = cn("localeDropdownMenu", className);
+    // const api = useContext(EditViewDataManagerContext);
     return (
       <Wrapper>
         <ButtonDropdown isOpen={this.state.isOpen} toggle={this.toggle}>

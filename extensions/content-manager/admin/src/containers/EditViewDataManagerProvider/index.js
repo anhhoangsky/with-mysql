@@ -143,7 +143,11 @@ const EditViewDataManagerProvider = ({
     },
     []
   );
-
+  //cus
+  const addInternational = useCallback((language) => {
+    dispatch({ type: "ADD_LANGUAGE_TO_INTERNATIONAL", language });
+  }, []);
+  //
   const addNonRepeatableComponentToField = useCallback((keys, componentUid) => {
     dispatch({
       type: "ADD_NON_REPEATABLE_COMPONENT_TO_FIELD",
@@ -232,7 +236,7 @@ const EditViewDataManagerProvider = ({
   const handleChange = useCallback(
     ({ target: { name, value, type } }, shouldSetInitialValue = false) => {
       let inputValue = value;
-
+      // console.log(inputValue);
       // Empty string is not a valid date,
       // Set the date to null when it's empty
       if (type === "date" && value === "") {
@@ -494,6 +498,9 @@ const EditViewDataManagerProvider = ({
   return (
     <EditViewDataManagerContext.Provider
       value={{
+        //cus dispatch
+        addInternational,
+        //
         addComponentToDynamicZone,
         addNonRepeatableComponentToField,
         addRelation,

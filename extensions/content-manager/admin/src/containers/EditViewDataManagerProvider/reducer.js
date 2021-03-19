@@ -13,6 +13,14 @@ const initialState = fromJS({
 
 const reducer = (state, action) => {
   switch (action.type) {
+    //cus
+    case "ADD_LANGUAGE_TO_INTERNATIONAL": {
+      // console.log("add repeate");
+      return state.updateIn(["modifiedData", "international"], (list) => {
+        if (list) return list.push(action.language);
+      });
+    }
+    //
     case "ADD_NON_REPEATABLE_COMPONENT_TO_FIELD":
       return state.updateIn(["modifiedData", ...action.keys], () => {
         const defaultDataStructure = state.getIn([
@@ -151,6 +159,7 @@ const reducer = (state, action) => {
           .insert(action.overIndex, list.get(action.dragIndex));
       });
     case "ON_CHANGE": {
+      // console.log("change");
       let newState = state;
       const [nonRepeatableComponentKey] = action.keys;
 
@@ -160,7 +169,7 @@ const reducer = (state, action) => {
       // TODO : Refactor the default form creation (workflow) to accept async default values.
       if (action.shouldSetInitialValue) {
         newState = state.updateIn(["initialData", ...action.keys], () => {
-          console.log(action);
+          // console.log(action);
           return action.value;
         });
       }

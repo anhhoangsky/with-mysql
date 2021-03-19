@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "khongcomponents",
+  "info": {
+    "name": "Khongcomponent"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "content": {
+      "type": "string"
+    }
+  }
+}

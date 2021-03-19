@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/khongcomponents",
+      "handler": "khongcomponent.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/khongcomponents/count",
+      "handler": "khongcomponent.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/khongcomponents/:id",
+      "handler": "khongcomponent.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/khongcomponents",
+      "handler": "khongcomponent.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/khongcomponents/:id",
+      "handler": "khongcomponent.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/khongcomponents/:id",
+      "handler": "khongcomponent.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

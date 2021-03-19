@@ -19,16 +19,20 @@ import { useLocation } from "react-router-dom";
 import EditViewDataManagerContext from "../../contexts/EditViewDataManager";
 import { TabWrapper, TapProgress, CardWrapper } from "./components";
 import { useStrapi } from "strapi-helper-plugin";
+import { isEqual } from "lodash";
 
 const ParentComponent = ({ addChild, onInitEditView, children }) => {
   const api = useContext(EditViewDataManagerContext);
   let location = useLocation().pathname;
+  // let a = isEqual(api.modifiedData, api.initialData);
+  console.log(api);
   if (location != "/create") {
     useEffect(() => {
-      console.log(api.initialData.international);
-      if (api.initialData.international != undefined)
-        onInitEditView(api.initialData.international);
-    }, [api.initialData, onInitEditView]); //compTabs, compPanels,
+      // console.log(api.initialData.international);
+      if (api.modifiedData.international != undefined) {
+        onInitEditView(api.modifiedData.international);
+      }
+    }, [api.modifiedData.international, onInitEditView]); //compTabs, compPanels,
   }
 
   return (
@@ -48,7 +52,7 @@ const wrapcreate = (props) => {
   const { block, blockIndex } = props.block;
   let location = useLocation().pathname;
   // console.log(useStrapi());
-  console.log(block);
+  // console.log(block);
   let international = false;
   for (let feilds of block) {
     if (feilds.find((field) => field.name == "locale") !== undefined) {
@@ -118,7 +122,10 @@ const wrapcreate = (props) => {
     const api = useContext(EditViewDataManagerContext);
     // console.log(api);
     useEffect(() => {
-      if (isAdd) onClick();
+      if (isAdd) {
+        onClick();
+        // api.addInternational(children);
+      }
     }, [isAdd]);
     return (
       <TabWrapper
@@ -281,7 +288,10 @@ const wrapcreate = (props) => {
 
   const [compTabs, setTabs] = useState(defaultTab);
   const [compPanels, setPanel] = useState(defaultPanel);
-  const onAddChild = (language) => {
+  const api = useContext(EditViewDataManagerContext);
+
+  const onAddChild = useCallback((language) => {
+    api.addInternational(language);
     setTabs((preState) => {
       let newState = [...preState];
       newState.push(
@@ -348,7 +358,7 @@ const wrapcreate = (props) => {
       );
       return newState;
     });
-  };
+  }, []);
 
   return (
     <ParentComponent addChild={onAddChild} onInitEditView={onInitEditView}>
