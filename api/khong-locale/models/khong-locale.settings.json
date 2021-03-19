@@ -1,8 +1,8 @@
 {
   "kind": "collectionType",
-  "collectionName": "tests",
+  "collectionName": "khong_locales",
   "info": {
-    "name": "Test"
+    "name": "KhongLocale"
   },
   "options": {
     "increments": true,
@@ -12,6 +12,11 @@
   "attributes": {
     "content": {
       "type": "string"
+    },
+    "Menu": {
+      "type": "component",
+      "repeatable": true,
+      "component": "menu.menu"
     }
   }
 }

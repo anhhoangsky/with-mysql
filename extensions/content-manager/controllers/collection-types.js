@@ -228,7 +228,7 @@ module.exports = {
       userAbility,
       model,
     });
-    // console.log(body);
+    console.log(body);
     if (permissionChecker.cannot.update()) {
       return ctx.forbidden();
     }
@@ -251,14 +251,14 @@ module.exports = {
 
     let record = {};
     const another = [];
-    // console.log(model);
-
+    let parentid;
     for (var key in body) {
       const n = key.lastIndexOf("__");
       if (n != -1) {
         const label = key.substring(0, n);
         const locale = key.substring(n + 2);
         const value = body[key];
+        if (label == "parentid" && value != -1) parentid = value;
         if (record[locale] === undefined) {
           record[locale] = {};
           record[locale][label] = value;
@@ -277,21 +277,47 @@ module.exports = {
         record[key] = { ...record[key], ...another };
       }
     }
-    for (var bd in record) {
-      const cusEntity = await entityManager.findOneWithCreatorRoles(
-        record[bd].id,
-        model
-      );
+    if (Object.keys(record).length !== 0) {
+      for (var bd in record) {
+        if (record[bd].id) {
+          const cusEntity = await entityManager.findOneWithCreatorRoles(
+            record[bd].id,
+            model
+          );
+          await wrapBadRequest(async () => {
+            // console.log(sanitizeFn(record[bd]), sanitizeFn(cusEntity), "i");
+            const updatedEntity = await entityManager.update(
+              cusEntity,
+              sanitizeFn(record[bd]),
+              model
+            );
+
+            ctx.body = record[bd];
+            // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+          })();
+        } else {
+          await wrapBadRequest(async () => {
+            // console.log(parentid, record[bd], "i");
+            const entity = await entityManager.create(
+              {
+                ...record[bd],
+                parentid: parentid,
+              },
+              model
+            );
+
+            ctx.body = permissionChecker.sanitizeOutput(entity);
+          })();
+        }
+      }
+    } else {
       await wrapBadRequest(async () => {
-        // console.log(sanitizeFn(record[bd]), sanitizeFn(cusEntity), "i");
         const updatedEntity = await entityManager.update(
-          cusEntity,
-          sanitizeFn(record[bd]),
+          entity,
+          sanitizeFn(body),
           model
         );
-
-        ctx.body = record[bd];
-        // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+        ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
       })();
     }
   },

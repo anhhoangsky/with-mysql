@@ -48,13 +48,19 @@ const wrapcreate = (props) => {
   const { block, blockIndex } = props.block;
   let location = useLocation().pathname;
   // console.log(useStrapi());
+  console.log(block);
   let international = false;
   for (let feilds of block) {
-    if (feilds.find((field) => field.name == "locale")) {
+    if (feilds.find((field) => field.name == "locale") !== undefined) {
       international = true;
-      break;
+      // break;
     }
   }
+  const locale =
+    window.localStorage.getItem("strapi-admin-language") ||
+    window.navigator.language ||
+    window.navigator.userLanguage ||
+    "en";
 
   if (!international) {
     return block.map((fieldsBlock, fieldsBlockIndex) => {
@@ -69,7 +75,7 @@ const wrapcreate = (props) => {
 
                 return (
                   <Fieldcomponentcreate
-                    locale={language}
+                    locale={locale}
                     key={componentUid}
                     componentUid={component}
                     isRepeatable={repeatable}
@@ -127,11 +133,6 @@ const wrapcreate = (props) => {
       </TabWrapper>
     );
   };
-  const locale =
-    window.localStorage.getItem("strapi-admin-language") ||
-    window.navigator.language ||
-    window.navigator.userLanguage ||
-    "en";
 
   let defaultTab;
   let defaultPanel;
