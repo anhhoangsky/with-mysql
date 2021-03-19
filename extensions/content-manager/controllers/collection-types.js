@@ -77,7 +77,7 @@ module.exports = {
     //customize
     try {
       const entity2 = await entityManager.find(
-        { _sort: "title:ASC", _where: [{ parentid: entity.id }] },
+        { _where: [{ parentid: entity.id }] },
         model
       );
       // console.log(model, id);
@@ -85,13 +85,23 @@ module.exports = {
       const reducer = (acc, curr) => {
         acc.international.push(curr.locale);
         for (let key in curr) {
-          if (key.indexOf("_") == -1) acc[`${key}__${curr.locale}`] = curr[key];
-          else {
+          if (key.indexOf("_") == -1) {
+            acc[`${key}__${curr.locale}`] = curr[key];
+            if (Array.isArray(acc[`${key}__${curr.locale}`])) {
+              acc[`${key}__${curr.locale}`] = acc[`${key}__${curr.locale}`].map(
+                (item, index) => {
+                  item.__temp_key__ = index;
+                  return item;
+                }
+              );
+            }
+          } else {
             acc[key] = curr[key];
           }
         }
         return acc;
       };
+
       if (!entity) {
         return ctx.notFound();
       }
@@ -100,9 +110,11 @@ module.exports = {
         return ctx.forbidden();
       }
       const entity3 = entity2.reduce(reducer, { international: [] });
+      // console.log(entity3);
 
       ctx.body = entity3;
     } catch (e) {
+      console.log(e.message);
       if (!entity) {
         return ctx.notFound();
       }
@@ -110,6 +122,7 @@ module.exports = {
       if (permissionChecker.cannot.read(entity)) {
         return ctx.forbidden();
       }
+      // console.log(entity);
       ctx.body = permissionChecker.sanitizeOutput(entity);
     }
     // end
@@ -120,10 +133,9 @@ module.exports = {
     const { model } = ctx.params;
     const { body } = ctx.request;
     //customize
-
     let record = {};
     const another = [];
-    let parentid = "-1";
+    let parentid = -1;
     for (var key in body) {
       const n = key.lastIndexOf("__");
       if (n != -1) {
@@ -168,37 +180,42 @@ module.exports = {
     const setCreator = setCreatorFields({ user });
 
     const sanitizeFn = pipe([pickWritables, pickPermittedFields, setCreator]);
+    if (Object.keys(record).length !== 0) {
+      await wrapBadRequest(async () => {
+        const entity = await entityManager.create(
+          sanitizeFn(record[Object.keys(record)[0]]),
+          model
+        );
+        console.log(record);
+        parentid = entity.id;
+        ctx.body = permissionChecker.sanitizeOutput(entity);
 
-    await wrapBadRequest(async () => {
-      const entity = await entityManager.create(
-        sanitizeFn(record[Object.keys(record)[0]]),
-        model
-      );
-      // console.log(entity.id);
-      parentid = entity.id.toString();
-      ctx.body = permissionChecker.sanitizeOutput(entity);
+        // await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
+        //   model,
+        // });
+      })();
+      for (var bd in record) {
+        console.log(Object.keys(record)[0], record[bd]);
+        if (bd != Object.keys(record)[0]) {
+          record[bd].parentid = parentid;
+          await wrapBadRequest(async () => {
+            const entity = await entityManager.create(
+              sanitizeFn(record[bd]),
+              model
+            );
+            ctx.body = permissionChecker.sanitizeOutput(entity);
 
-      await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
-        model,
-      });
-    })();
-
-    for (var bd in record) {
-      // console.log(Object.keys(record)[0], record[bd]);
-      if (bd != Object.keys(record)[0]) {
-        record[bd].parentid = parentid;
-        await wrapBadRequest(async () => {
-          const entity = await entityManager.create(
-            sanitizeFn(record[bd]),
-            model
-          );
-          ctx.body = permissionChecker.sanitizeOutput(entity);
-
-          await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
-            model,
-          });
-        })();
+            await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
+              model,
+            });
+          })();
+        }
       }
+    } else {
+      await wrapBadRequest(async () => {
+        const entity = await entityManager.create(sanitizeFn(body), model);
+        ctx.body = permissionChecker.sanitizeOutput(entity);
+      })();
     }
   },
 
@@ -234,7 +251,6 @@ module.exports = {
 
     let record = {};
     const another = [];
-    // let parentid = "-1";
     // console.log(model);
 
     for (var key in body) {
@@ -247,11 +263,9 @@ module.exports = {
           record[locale] = {};
           record[locale][label] = value;
           record[locale].locale = locale;
-          // record[locale].parentid = parentid;
         } else {
           record[locale][label] = value;
           record[locale].locale = locale;
-          // record[locale].parentid = parentid;
         }
       } else {
         another[key] = body[key];
@@ -269,15 +283,15 @@ module.exports = {
         model
       );
       await wrapBadRequest(async () => {
-        // console.log(record["en"], "i");
+        // console.log(sanitizeFn(record[bd]), sanitizeFn(cusEntity), "i");
         const updatedEntity = await entityManager.update(
           cusEntity,
           sanitizeFn(record[bd]),
           model
         );
 
-        // ctx.body = record[bd];
-        ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+        ctx.body = record[bd];
+        // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
       })();
     }
   },

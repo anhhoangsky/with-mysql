@@ -112,7 +112,7 @@ const RepeatableComponent = ({
               collapseToOpen === previousComponentTempKey;
 
             const hasErrors = componentErrorKeys.includes(componentFieldName);
-
+            // console.log(key);
             return (
               <DraggedItem
                 locale={locale}

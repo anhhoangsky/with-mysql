@@ -304,7 +304,7 @@ const EditViewDataManagerProvider = ({
         await yupSchema.validate(modifiedData, { abortEarly: false });
 
         const formData = createFormData(modifiedData);
-        console.log(formData);
+        // console.log(formData);
 
         if (isCreatingEntry) {
           onPost(formData, trackerProperty);

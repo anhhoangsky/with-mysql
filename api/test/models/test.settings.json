@@ -2,8 +2,7 @@
   "kind": "collectionType",
   "collectionName": "tests",
   "info": {
-    "name": "test",
-    "description": ""
+    "name": "Test"
   },
   "options": {
     "increments": true,
@@ -11,18 +10,7 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "Test": {
-      "type": "string"
-    },
-    "item": {
-      "type": "component",
-      "repeatable": true,
-      "component": "menu.menu"
-    },
-    "locale": {
-      "type": "string"
-    },
-    "parentid": {
+    "content": {
       "type": "string"
     }
   }

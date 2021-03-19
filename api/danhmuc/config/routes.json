@@ -2,48 +2,48 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/test-2-s",
-      "handler": "test2.find",
+      "path": "/danhmucs",
+      "handler": "danhmuc.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/test-2-s/count",
-      "handler": "test2.count",
+      "path": "/danhmucs/count",
+      "handler": "danhmuc.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/test-2-s/:id",
-      "handler": "test2.findOne",
+      "path": "/danhmucs/:id",
+      "handler": "danhmuc.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/test-2-s",
-      "handler": "test2.create",
+      "path": "/danhmucs",
+      "handler": "danhmuc.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/test-2-s/:id",
-      "handler": "test2.update",
+      "path": "/danhmucs/:id",
+      "handler": "danhmuc.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/test-2-s/:id",
-      "handler": "test2.delete",
+      "path": "/danhmucs/:id",
+      "handler": "danhmuc.delete",
       "config": {
         "policies": []
       }

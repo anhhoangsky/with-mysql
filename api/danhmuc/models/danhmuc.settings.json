@@ -1,8 +1,8 @@
 {
   "kind": "collectionType",
-  "collectionName": "test2s",
+  "collectionName": "danhmucs",
   "info": {
-    "name": "test2"
+    "name": "danhmuc"
   },
   "options": {
     "increments": true,
@@ -10,7 +10,13 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "test": {
+    "locale": {
+      "type": "string"
+    },
+    "parentid": {
+      "type": "biginteger"
+    },
+    "content": {
       "type": "string"
     }
   }
