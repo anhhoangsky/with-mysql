@@ -190,9 +190,9 @@ module.exports = {
         parentid = entity.id;
         ctx.body = permissionChecker.sanitizeOutput(entity);
 
-        // await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
-        //   model,
-        // });
+        await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
+          model,
+        });
       })();
       for (var bd in record) {
         console.log(Object.keys(record)[0], record[bd]);
@@ -203,15 +203,14 @@ module.exports = {
               sanitizeFn(record[bd]),
               model
             );
-            ctx.body = permissionChecker.sanitizeOutput(entity);
+            // ctx.body = permissionChecker.sanitizeOutput(entity);
 
-            // await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
-            //   model,
-            // });
+            await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
+              model,
+            });
           })();
         }
       }
-      // ctx.body = record;
     } else {
       await wrapBadRequest(async () => {
         const entity = await entityManager.create(sanitizeFn(body), model);
