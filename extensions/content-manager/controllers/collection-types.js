@@ -205,18 +205,21 @@ module.exports = {
             );
             ctx.body = permissionChecker.sanitizeOutput(entity);
 
-            await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
-              model,
-            });
+            // await strapi.telemetry.send("didCreateFirstContentTypeEntry", {
+            //   model,
+            // });
           })();
         }
       }
+      // ctx.body = record;
     } else {
       await wrapBadRequest(async () => {
         const entity = await entityManager.create(sanitizeFn(body), model);
         ctx.body = permissionChecker.sanitizeOutput(entity);
+        // console.log(ctx.body);
       })();
     }
+    // ctx.body = record;
   },
 
   async update(ctx) {
@@ -228,7 +231,7 @@ module.exports = {
       userAbility,
       model,
     });
-    console.log(body);
+    // console.log(body);
     if (permissionChecker.cannot.update()) {
       return ctx.forbidden();
     }
@@ -292,7 +295,7 @@ module.exports = {
               model
             );
 
-            ctx.body = record[bd];
+            // ctx.body = body;
             // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
           })();
         } else {
@@ -306,7 +309,7 @@ module.exports = {
               model
             );
 
-            ctx.body = permissionChecker.sanitizeOutput(entity);
+            // ctx.body = permissionChecker.sanitizeOutput(entity);
           })();
         }
       }
@@ -317,9 +320,10 @@ module.exports = {
           sanitizeFn(body),
           model
         );
-        ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+        // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
       })();
     }
+    ctx.body = body;
   },
 
   async delete(ctx) {
