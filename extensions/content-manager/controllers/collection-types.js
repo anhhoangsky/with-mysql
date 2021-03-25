@@ -1,5 +1,7 @@
 "use strict";
-const { has, pipe, prop, pick, isEmpty } = require("lodash/fp");
+const { has, pipe, prop, pick, isEmpty, keys } = require("lodash/fp");
+const _ = require("lodash");
+
 const { MANY_RELATIONS } = require("strapi-utils").relations.constants;
 
 const {
@@ -31,7 +33,6 @@ module.exports = {
       : "findWithRelationCounts";
     const cusquery = { ...query };
     cusquery.parentid = "-1";
-    // console.log(cus);
     try {
       const permissionQuery = permissionChecker.buildReadQuery(cusquery);
       const { results, pagination } = await entityManager[method](
@@ -46,6 +47,7 @@ module.exports = {
       };
     } catch (e) {
       const permissionQuery = permissionChecker.buildReadQuery(query);
+      // console.log(permissionQuery, model, method);
       const { results, pagination } = await entityManager[method](
         permissionQuery,
         model
@@ -74,6 +76,8 @@ module.exports = {
     }
 
     const entity = await entityManager.findOneWithCreatorRoles(id, model);
+
+    console.log(entity);
     //customize
     try {
       const entity2 = await entityManager.find(
@@ -110,11 +114,9 @@ module.exports = {
         return ctx.forbidden();
       }
       const entity3 = entity2.reduce(reducer, { international: [] });
-      // console.log(entity3);
 
       ctx.body = entity3;
     } catch (e) {
-      // console.log(e.message);
       if (!entity) {
         return ctx.notFound();
       }
@@ -122,7 +124,6 @@ module.exports = {
       if (permissionChecker.cannot.read(entity)) {
         return ctx.forbidden();
       }
-      // console.log(entity);
       ctx.body = permissionChecker.sanitizeOutput(entity);
     }
     // end
@@ -186,7 +187,6 @@ module.exports = {
           sanitizeFn(record[Object.keys(record)[0]]),
           model
         );
-        console.log(record);
         parentid = entity.id;
         ctx.body = permissionChecker.sanitizeOutput(entity);
 
@@ -195,7 +195,6 @@ module.exports = {
         });
       })();
       for (var bd in record) {
-        console.log(Object.keys(record)[0], record[bd]);
         if (bd != Object.keys(record)[0]) {
           record[bd].parentid = parentid;
           await wrapBadRequest(async () => {
@@ -225,12 +224,12 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { id, model } = ctx.params;
     const { body } = ctx.request;
+    console.log(body, "ooooooo");
     const entityManager = getService("entity-manager");
     const permissionChecker = getService("permission-checker").create({
       userAbility,
       model,
     });
-    // console.log(body);
     if (permissionChecker.cannot.update()) {
       return ctx.forbidden();
     }
@@ -319,10 +318,10 @@ module.exports = {
           sanitizeFn(body),
           model
         );
-        // ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+        console.log(sanitizeFn(body));
+        ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
       })();
     }
-    ctx.body = body;
   },
 
   async delete(ctx) {
@@ -514,5 +513,77 @@ module.exports = {
         pick(["id", modelDef.primaryKey, mainField])
       ),
     };
+  },
+  //cus
+  //find username for set create_by
+  async findUserNames(ctx) {
+    const { model } = ctx.params;
+    const { query } = ctx.request;
+    // console.log(model, query);
+    const { id } = query;
+    const entityManager = getService("entity-manager");
+    const { results } = await entityManager.findWithRelationCounts(
+      {
+        page: "1",
+        pageSize: "10",
+        _sort: "username:ASC",
+        _where: [{}],
+      },
+      "plugins::users-permissions.user"
+    );
+    ctx.body = results.map(pick(["username", "id"]));
+  },
+  //cus
+  async updateCreatedBy(ctx) {
+    const { userAbility, user } = ctx.state;
+    const { id, model } = ctx.params;
+    const { body } = ctx.request;
+    const entityManager = getService("entity-manager");
+    const permissionChecker = getService("permission-checker").create({
+      userAbility,
+      model,
+    });
+
+    if (permissionChecker.cannot.update()) {
+      return ctx.forbidden();
+    }
+
+    const entity = await entityManager.findOneWithCreatorRoles(id, model);
+    // const newUser = await entityManager.findOneWithCreatorRoles(
+    //   body.id,
+    //   "plugins::users-permissions.user"
+    // );
+    // const createdby = {
+    //   ..._.pick(newUser, [...keys(user), "role"]),
+    //   registrationToken: null,
+    //   isActive: true,
+    // };
+    // console.log(user, createdby, newUser);
+    // const cusetity = {...entity, ...createdby}
+    const cusEntity = { ...entity, created_by: body.id };
+
+    if (!entity) {
+      return ctx.notFound();
+    }
+
+    if (permissionChecker.cannot.update(entity)) {
+      return ctx.forbidden();
+    }
+
+    const pickWritables = pickWritableAttributes({ model });
+    const pickPermittedFields = permissionChecker.sanitizeUpdateInput(
+      cusEntity
+    );
+    const setCreator = setCreatorFields({ user, isEdition: true });
+    const sanitizeFn = pipe([pickWritables, pickPermittedFields, setCreator]);
+    await wrapBadRequest(async () => {
+      const updatedEntity = await entityManager.update(
+        cusEntity,
+        sanitizeFn(cusEntity),
+        model
+      );
+      ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
+      // console.log(ctx.body);
+    })();
   },
 };

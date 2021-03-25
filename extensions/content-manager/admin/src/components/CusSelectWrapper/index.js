@@ -6,7 +6,7 @@ import { findIndex, get, isArray, isEmpty } from "lodash";
 import { NotAllowedInput, request } from "strapi-helper-plugin";
 import { Flex, Text, Padded } from "@buffetjs/core";
 import pluginId from "../../pluginId";
-import useDataManager from "../../hooks/useDataManager";
+import useDataManager from "../../hooks/useListView";
 import SelectOne from "../SelectOne";
 import SelectMany from "../SelectMany";
 import ClearIndicator from "./ClearIndicator";
@@ -41,14 +41,16 @@ function SelectWrapper({
   ]);
   const {
     addRelation,
-    modifiedData,
+    data,
     moveRelation,
-    onChange,
+    onChangeUserCreate,
     onRemoveRelation,
   } = useDataManager();
-  // console.log(useDataManager());
+  console.log(data);
   const { pathname } = useLocation();
-  const value = get(modifiedData, name, null);
+  const value = get(data[0].created_by, name, null);
+
+  // console.log(typeof value);
   const [state, setState] = useState(initialPaginationState);
   const [options, setOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +78,6 @@ function SelectWrapper({
     defaultParams,
     shouldDisplayRelationLink,
   } = queryInfos;
-  console.log(endPoint);
   const isSingle = [
     "oneWay",
     "oneToOne",
@@ -122,6 +123,7 @@ function SelectWrapper({
 
       try {
         const data = await request(endPoint, {
+          // method: "GET",
           method: "POST",
           params,
           signal,
@@ -201,7 +203,13 @@ function SelectWrapper({
   };
 
   const handleChange = (value) => {
-    onChange({ target: { name, value: value ? value.value : value } });
+    // console.log({ target: { name, value: value ? value.value : value,...defaultParams } });
+    onChangeUserCreate({
+      name,
+      value: value ? value.value : value,
+      ...defaultParams,
+      data,
+    });
   };
 
   const handleAddRelation = (value) => {
@@ -214,7 +222,7 @@ function SelectWrapper({
     setIsOpen(true);
   };
 
-  const to = `/plugins/${pluginId}/collectionType/${targetModel}/${
+  const to = `/plugins/${pluginId}/collection-types/${targetModel}/${
     value ? value.id : null
   }`;
 
@@ -258,7 +266,6 @@ function SelectWrapper({
   if (!isCreatingEntry && !isFieldAllowed && !isFieldReadable) {
     return <NotAllowedInput label={label} />;
   }
-
   return (
     <Padded>
       <BaselineAlignment />

@@ -25,7 +25,6 @@ const ParentComponent = ({ addChild, onInitEditView, children }) => {
   const api = useContext(EditViewDataManagerContext);
   let location = useLocation().pathname;
   // let a = isEqual(api.modifiedData, api.initialData);
-  console.log(api);
   if (location != "/create") {
     useEffect(() => {
       // console.log(api.initialData.international);
@@ -52,7 +51,6 @@ const wrapcreate = (props) => {
   const { block, blockIndex } = props.block;
   let location = useLocation().pathname;
   // console.log(useStrapi());
-  // console.log(block);
   let international = false;
   for (let feilds of block) {
     if (feilds.find((field) => field.name == "locale") !== undefined) {
@@ -120,7 +118,7 @@ const wrapcreate = (props) => {
   const Tab = ({ children, isAdd }) => {
     const { isActive, onClick } = useTabState(false);
     const api = useContext(EditViewDataManagerContext);
-    // console.log(api);
+    console.log(api);
     useEffect(() => {
       if (isAdd) {
         onClick();

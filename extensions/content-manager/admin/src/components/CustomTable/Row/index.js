@@ -1,19 +1,32 @@
-import React, { memo, useCallback, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { toString } from 'lodash';
-import { useGlobalContext } from 'strapi-helper-plugin';
-import { IconLinks } from '@buffetjs/core';
-import { Duplicate } from '@buffetjs/icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useListView } from '../../../hooks';
-import { getDisplayedValue } from '../../../utils';
-import CustomInputCheckbox from '../../CustomInputCheckbox';
-import ActionContainer from './ActionContainer';
-import Cell from './Cell';
-
+import React, { memo, useCallback, useRef } from "react";
+import PropTypes from "prop-types";
+import { toString } from "lodash";
+import { useGlobalContext } from "strapi-helper-plugin";
+import { IconLinks } from "@buffetjs/core";
+import { Duplicate } from "@buffetjs/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useListView } from "../../../hooks";
+import { getDisplayedValue } from "../../../utils";
+import CustomInputCheckbox from "../../CustomInputCheckbox";
+import ActionContainer from "./ActionContainer";
+import Cell from "./Cell";
+import { Flex, Padded, Picker } from "@buffetjs/core";
+import SelectWrapper from "../../../components/CusSelectWrapper";
+import Wrapper from "./Wrapper";
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 
-function Row({ canCreate, canDelete, canUpdate, isBulkable, row, headers, goTo }) {
+function Row({
+  //cus
+  canSetPermission = true,
+  //
+  canCreate,
+  canDelete,
+  canUpdate,
+  isBulkable,
+  row,
+  headers,
+  goTo,
+}) {
   const { entriesToDelete, onChangeBulk, onClickDelete } = useListView();
   const { emitEvent } = useGlobalContext();
   const emitEventRef = useRef(emitEvent);
@@ -28,38 +41,117 @@ function Row({ canCreate, canDelete, canUpdate, isBulkable, row, headers, goTo }
   const links = [
     {
       icon: canCreate ? <Duplicate fill="black" /> : null,
-      onClick: e => {
+      onClick: (e) => {
         e.stopPropagation();
         goTo(`create/clone/${row.id}`);
       },
     },
     {
       icon: canUpdate ? <FontAwesomeIcon icon="pencil-alt" /> : null,
-      onClick: e => {
+      onClick: (e) => {
         e.stopPropagation();
-        emitEventRef.current('willDeleteEntryFromList');
+        emitEventRef.current("willDeleteEntryFromList");
         goTo(row.id);
       },
     },
     {
       icon: canDelete ? <FontAwesomeIcon icon="trash-alt" /> : null,
-      onClick: e => {
+      onClick: (e) => {
         e.stopPropagation();
-        emitEventRef.current('willDeleteEntryFromList');
+        emitEventRef.current("willDeleteEntryFromList");
         onClickDelete(row.id);
       },
     },
-  ].filter(icon => icon);
+    {
+      icon: canSetPermission ? (
+        <Picker
+          position="right"
+          renderButtonContent={() => (
+            <div>
+              <FontAwesomeIcon icon="cog" />
+            </div>
+          )}
+          renderSectionContent={(onToggle) => (
+            <>
+              <Wrapper>
+                {[
+                  {
+                    name: "username",
+                    size: 6,
+                    fieldSchema: {
+                      model: "username",
+                      via: "users",
+                      plugin: "users-permissions",
+                      configurable: false,
+                      type: "relation",
+                      targetModel: "plugins::users-permissions.username",
+                      relationType: "manyToOne",
+                    },
+                    metadatas: {
+                      label: "username",
+                      description: "",
+                      placeholder: "Chọn user",
+                      visible: true,
+                      editable: true,
+                      mainField: {
+                        name: "username",
+                        schema: {
+                          type: "string",
+                          minLength: 3,
+                          required: true,
+                          configurable: false,
+                        },
+                      },
+                    },
+                    queryInfos: {
+                      endPoint:
+                        // "/admin/users/ok/username",
+                        // "/content-manager/collection-types/plugins::users-permissions.user/username",
+                        "/content-manager/collection-types/list/username",
+                      // "/content-manager/relations/plugins::users-permissions.user/role",
+                      containsKey: "name_contains",
+                      defaultParams: { id: row.id },
+                      shouldDisplayRelationLink: false,
+                    },
+                  },
+                ].map(({ name, fieldSchema, metadatas, queryInfos }) => {
+                  return (
+                    <SelectWrapper
+                      {...fieldSchema}
+                      {...metadatas}
+                      queryInfos={queryInfos}
+                      key={name}
+                      name={name}
+                      relationsType={fieldSchema.relationType}
+                    />
+                  );
+                })}
+              </Wrapper>
+            </>
+          )}
+        />
+      ) : null,
+      onClick: (e) => {
+        e.stopPropagation();
+
+        // emitEventRef.current("willDeleteEntryFromList");
+        // onClickDelete(row.id);
+      },
+    },
+  ].filter((icon) => icon);
 
   return (
     <>
       {isBulkable && (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-        <td key="i" onClick={e => e.stopPropagation()}>
+        <td key="i" onClick={(e) => e.stopPropagation()}>
           <CustomInputCheckbox
             name={row.id}
             onChange={onChangeBulk}
-            value={entriesToDelete.filter(id => toString(id) === toString(row.id)).length > 0}
+            value={
+              entriesToDelete.filter((id) => toString(id) === toString(row.id))
+                .length > 0
+            }
           />
         </td>
       )}

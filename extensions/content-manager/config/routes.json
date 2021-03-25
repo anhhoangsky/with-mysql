@@ -1,6 +1,47 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/collection-types/list/:targetField",
+      "handler": "user.findUserNames",
+      "config": {
+        "policies": [
+          "admin::isAuthenticatedAdmin",
+          ["admin::hasPermissions", ["admin::users.read"]]
+        ]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/collection-types/:model/updatecreatedby/:id",
+      "handler": "collection-types.updateCreatedBy",
+      "config": {
+        "policies": [
+          "routing",
+          "admin::isAuthenticatedAdmin",
+          ["plugins::content-manager.hasPermissions", ["plugins::content-manager.explorer.update"]]
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/collection-types/:model/:targetField",
+      "handler": "collection-types.findUserNames",
+      "config": {
+        "policies": [
+          "admin::isAuthenticatedAdmin",
+          [
+            "plugins::content-manager.hasPermissions",
+            [
+              "plugins::content-manager.explorer.create",
+              "plugins::content-manager.explorer.update"
+            ],
+            { "hasAtLeastOne": true }
+          ]
+        ]
+      }
+    },
+    {
       "method": "GET",
       "path": "/content-types",
       "handler": "content-types.findContentTypes",

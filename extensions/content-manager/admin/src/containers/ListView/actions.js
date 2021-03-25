@@ -13,7 +13,10 @@ import {
   SET_MODAL_LOADING_STATE,
   TOGGLE_MODAL_DELETE,
   TOGGLE_MODAL_DELETE_ALL,
-} from './constants';
+  //cus
+  ON_CHANGE_USER_CREATE,
+  ADD_RELATION,
+} from "./constants";
 
 export const getData = () => ({ type: GET_DATA });
 
@@ -78,6 +81,14 @@ export function toggleModalDelete() {
   };
 }
 
-export const setLayout = layout => ({ layout, type: SET_LIST_LAYOUT });
+export const setLayout = (layout) => ({ layout, type: SET_LIST_LAYOUT });
 
-export const onChangeListHeaders = target => ({ type: ON_CHANGE_LIST_HEADERS, target });
+export const onChangeListHeaders = (target) => ({
+  type: ON_CHANGE_LIST_HEADERS,
+  target,
+});
+
+export const onChangeUserCreate = (target) => ({
+  type: ON_CHANGE_USER_CREATE,
+  target,
+});

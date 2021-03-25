@@ -1,6 +1,7 @@
 import React, {
   memo,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -55,6 +56,10 @@ import {
   setLayout,
   onChangeListHeaders,
   onResetListHeaders,
+  //cus
+  onChangeUserCreate,
+  addRelation,
+  //
 } from "./actions";
 import makeSelectListView from "./selectors";
 
@@ -63,6 +68,10 @@ import { getAllAllowedHeaders, getFirstSortableHeader } from "./utils";
 /* eslint-disable react/no-array-index-key */
 
 function ListView({
+  //cus
+  onChangeUserCreate,
+  addRelation,
+  //
   didDeleteData,
   entriesToDelete,
   onChangeBulk,
@@ -106,6 +115,7 @@ function ListView({
 
   const { emitEvent } = useGlobalContext();
   const emitEventRef = useRef(emitEvent);
+  // console.log(emitEventRef);
   const viewPermissions = useMemo(() => generatePermissionsObject(slug), [
     slug,
   ]);
@@ -173,7 +183,11 @@ function ListView({
           method: "GET",
           signal,
         });
-
+        // const { results, pagination } = await request("/admin/users", {
+        //   method: "GET",
+        //   signal,
+        // });
+        // console.log(results);
         getDataSucceeded(pagination, results);
       } catch (err) {
         if (err.name !== "AbortError") {
@@ -386,8 +400,25 @@ function ListView({
 
   const handleToggleModalDeleteAll = (e) => {
     emitEventRef.current("willBulkDeleteEntries");
+    console.log(e);
     toggleModalDeleteAll(e);
   };
+  //cus
+  const handleAddRelation = useCallback((e) => {
+    addRelation(e);
+  }, []);
+
+  const handleChange = useCallback(async (e, shouldSetInitialValue = false) => {
+    console.log(e);
+    // onChangeUserCreate(e);
+    await request(
+      getRequestUrl(`collection-types/${slug}/updatecreatedby/${e.id}`),
+      {
+        method: "PUT",
+        body: { id: e.value.id },
+      }
+    );
+  }, []);
 
   return (
     <>
@@ -405,6 +436,10 @@ function ListView({
         slug={slug}
         toggleModalDeleteAll={handleToggleModalDeleteAll}
         setQuery={setQuery}
+        //cus
+        addRelation={handleAddRelation}
+        isCreatingEntry={false}
+        onChangeUserCreate={handleChange}
       >
         <FilterPicker
           contentType={contentType}
@@ -593,6 +628,8 @@ export function mapDispatchToProps(dispatch) {
       toggleModalDelete,
       toggleModalDeleteAll,
       setLayout,
+      //cus
+      onChangeUserCreate,
     },
     dispatch
   );

@@ -41,10 +41,11 @@ const Wrapper = styled.div`
   .localeDropdownContent {
     -webkit-font-smoothing: antialiased;
     span {
-      color: #333740;
-      font-size: 13px;
-      font-family: Lato;
-      font-weight: 500;
+      // color: #333740;
+      font: 32px/42px san-serif;
+      color: #3c3cf6;
+      // font-family: Lato;
+      font-weight: 100;
       letter-spacing: 0.5;
       vertical-align: baseline;
     }

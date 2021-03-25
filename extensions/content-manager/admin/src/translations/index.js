@@ -76,7 +76,7 @@ export const languageNativeNames = {
   vi: "Tiếng Việt",
   "zh-Hans": "中文 (简体)",
   zh: "中文 (繁體)",
-  select: "Add",
+  select: "+",
 };
 
 export default trads;

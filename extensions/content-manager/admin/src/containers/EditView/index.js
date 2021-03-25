@@ -17,8 +17,8 @@ import pluginPermissions from "../../permissions";
 import Container from "../../components/Container";
 import DynamicZone from "../../components/DynamicZone";
 import FormWrapper from "../../components/FormWrapper";
-import FieldComponent from "../../components/FieldComponent";
-import Inputs from "../../components/Inputs";
+// import FieldComponent from "../../components/FieldComponent";
+// import Inputs from "../../components/Inputs";
 import SelectWrapper from "../../components/SelectWrapper";
 import { generatePermissionsObject, getInjectedComponents } from "../../utils";
 import CollectionTypeFormWrapper from "../CollectionTypeFormWrapper";
@@ -107,7 +107,7 @@ const EditView = ({
   if (isLoadingForPermissions) {
     return <LoadingIndicatorPage />;
   }
-
+  // console.log(currentContentTypeLayoutData);
   // TODO: create a hook to handle/provide the permissions this should be done for the i18n feature
   return (
     <DataManagementWrapper

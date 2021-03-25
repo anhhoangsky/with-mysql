@@ -1,11 +1,12 @@
 import { useMemo } from "react";
-import useDataManager from "../../../hooks/useDataManager";
+import useDataManager from "../../../hooks/useListView";
 
 function useSelect({
   isUserAllowedToEditField,
   isUserAllowedToReadField,
   name,
 }) {
+  // console.log(useDataManager());
   const {
     isCreatingEntry,
     createActionAllowedFields,
@@ -14,13 +15,14 @@ function useSelect({
   } = useDataManager();
 
   const isFieldAllowed = useMemo(() => {
+    return true;
     if (isUserAllowedToEditField === true) {
       return true;
     }
 
-    const allowedFields = isCreatingEntry
-      ? createActionAllowedFields
-      : updateActionAllowedFields;
+    const allowedFields = isCreatingEntry ? ["username"] : ["username"];
+    // ? createActionAllowedFields
+    // : updateActionAllowedFields;
 
     return allowedFields.includes(name);
   }, [
@@ -32,11 +34,12 @@ function useSelect({
   ]);
 
   const isFieldReadable = useMemo(() => {
+    return true;
     if (isUserAllowedToReadField) {
       return true;
     }
 
-    const allowedFields = isCreatingEntry ? [] : readActionAllowedFields;
+    const allowedFields = isCreatingEntry ? [] : ["username"]; //readActionAllowedFields;
 
     return allowedFields.includes(name);
   }, [

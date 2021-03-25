@@ -3,8 +3,13 @@
  * listView reducer
  */
 
-import produce from 'immer';
+import produce from "immer";
 import {
+  //cus
+  ON_SET_PERMISSION,
+  ADD_RELATION,
+  ON_CHANGE_USER_CREATE,
+  //
   GET_DATA,
   GET_DATA_SUCCEEDED,
   RESET_PROPS,
@@ -19,7 +24,7 @@ import {
   ON_RESET_LIST_HEADERS,
   SET_LIST_LAYOUT,
   SET_MODAL_LOADING_STATE,
-} from './constants';
+} from "./constants";
 
 export const initialState = {
   data: [],
@@ -35,12 +40,29 @@ export const initialState = {
   pagination: {
     total: 0,
   },
+  permisition: -1,
 };
 
 const listViewReducer = (state = initialState, action) =>
   // eslint-disable-next-line consistent-return
-  produce(state, drafState => {
+  produce(state, (drafState) => {
+    console.log(state);
     switch (action.type) {
+      case ON_CHANGE_USER_CREATE: {
+        // drafState.data[action.target.id].create_by
+        drafState.data = drafState.data.map((item) => {
+          if (item.id == action.target.id) {
+            item.created_by = { ...item.created_by, ...action.target.value };
+            return item;
+          }
+        });
+        // console.log(action.target.id);
+      }
+      case ON_SET_PERMISSION: {
+        drafState.permisition = action.id;
+      }
+      case ADD_RELATION:
+        return; //todo;
       case GET_DATA: {
         return {
           ...initialState,
@@ -57,10 +79,14 @@ const listViewReducer = (state = initialState, action) =>
         break;
       }
       case ON_CHANGE_BULK: {
-        const hasElement = state.entriesToDelete.some(el => el === action.name);
+        const hasElement = state.entriesToDelete.some(
+          (el) => el === action.name
+        );
 
         if (hasElement) {
-          drafState.entriesToDelete = drafState.entriesToDelete.filter(el => el !== action.name);
+          drafState.entriesToDelete = drafState.entriesToDelete.filter(
+            (el) => el !== action.name
+          );
           break;
         }
 
@@ -74,7 +100,7 @@ const listViewReducer = (state = initialState, action) =>
           break;
         }
 
-        drafState.data.forEach(value => {
+        drafState.data.forEach((value) => {
           drafState.entriesToDelete.push(value.id.toString());
         });
 
@@ -96,7 +122,7 @@ const listViewReducer = (state = initialState, action) =>
             key: `__${name}_key__`,
           };
 
-          if (attributes[name].type === 'relation') {
+          if (attributes[name].type === "relation") {
             drafState.displayedHeaders.push({
               ...header,
               queryInfos: {
@@ -109,7 +135,7 @@ const listViewReducer = (state = initialState, action) =>
           }
         } else {
           drafState.displayedHeaders = state.displayedHeaders.filter(
-            header => header.name !== name
+            (header) => header.name !== name
           );
         }
 
