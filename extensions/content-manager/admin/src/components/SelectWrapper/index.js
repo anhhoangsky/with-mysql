@@ -49,6 +49,7 @@ function SelectWrapper({
   // console.log(useDataManager());
   const { pathname } = useLocation();
   const value = get(modifiedData, name, null);
+  // console.log(value, name, modifiedData);
   const [state, setState] = useState(initialPaginationState);
   const [options, setOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +77,6 @@ function SelectWrapper({
     defaultParams,
     shouldDisplayRelationLink,
   } = queryInfos;
-  console.log(endPoint);
   const isSingle = [
     "oneWay",
     "oneToOne",

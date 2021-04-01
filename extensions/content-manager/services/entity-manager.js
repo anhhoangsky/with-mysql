@@ -73,7 +73,7 @@ module.exports = {
   },
 
   searchWithRelationCounts(params, model, populate) {
-    console.log(params, "search");
+    // console.log(params, "search");
     return strapi.entityService.searchWithRelationCounts(
       { params, populate },
       { model }
@@ -118,7 +118,7 @@ module.exports = {
       ...omitPublishedAtField(body),
       created_by: entity.created_by,
     };
-    console.log(params, publishData, model);
+    // console.log(params, publishData, model);
     return strapi.entityService.update(
       { params, data: publishData },
       { model }
@@ -131,6 +131,7 @@ module.exports = {
   },
 
   findAndDelete(params, model) {
+    console.log("delete nhieu");
     return strapi.entityService.delete({ params }, { model });
   },
 

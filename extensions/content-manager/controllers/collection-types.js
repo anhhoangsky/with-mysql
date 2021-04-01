@@ -17,7 +17,7 @@ module.exports = {
     const { userAbility } = ctx.state;
     const { model } = ctx.params;
     const { query } = ctx.request;
-
+    // console.log(query);
     const entityManager = getService("entity-manager");
     const permissionChecker = getService("permission-checker").create({
       userAbility,
@@ -77,7 +77,7 @@ module.exports = {
 
     const entity = await entityManager.findOneWithCreatorRoles(id, model);
 
-    console.log(entity);
+    // console.log(entity);
     //customize
     try {
       const entity2 = await entityManager.find(
@@ -224,7 +224,7 @@ module.exports = {
     const { userAbility, user } = ctx.state;
     const { id, model } = ctx.params;
     const { body } = ctx.request;
-    console.log(body, "ooooooo");
+    // console.log(body, "ooooooo");
     const entityManager = getService("entity-manager");
     const permissionChecker = getService("permission-checker").create({
       userAbility,
@@ -318,7 +318,7 @@ module.exports = {
           sanitizeFn(body),
           model
         );
-        console.log(sanitizeFn(body));
+        // console.log(sanitizeFn(body));
         ctx.body = permissionChecker.sanitizeOutput(updatedEntity);
       })();
     }
@@ -327,7 +327,6 @@ module.exports = {
   async delete(ctx) {
     const { userAbility } = ctx.state;
     const { id, model } = ctx.params;
-
     const entityManager = getService("entity-manager");
     const permissionChecker = getService("permission-checker").create({
       userAbility,
@@ -348,9 +347,25 @@ module.exports = {
       return ctx.forbidden();
     }
 
-    const result = await entityManager.delete(entity, model);
+    const res = await entityManager.delete(entity, model);
+    try {
+      const permissionQuery = { _where: [{ parentid: entity.id }] };
+      // const permissionQuery = permissionChecker.buildReadQuery(query);
+      // console.log(permissionQuery);
+      const {
+        results,
+        pagination,
+      } = await entityManager.findWithRelationCounts(permissionQuery, model);
+      const ids = results.map((record) => record.id);
+      const params = { _where: [{ id_in: ids }, {}] };
+      const response = await entityManager.findAndDelete(params, model);
 
-    ctx.body = permissionChecker.sanitizeOutput(result);
+      ctx.body = response.map((result) =>
+        permissionChecker.sanitizeOutput(result)
+      );
+    } catch (errors) {
+      ctx.body = permissionChecker.sanitizeOutput(res);
+    }
   },
 
   async publish(ctx) {
@@ -436,7 +451,6 @@ module.exports = {
       ...permissionQuery,
       _where: [idsWhereClause].concat(permissionQuery._where || {}),
     };
-
     const results = await entityManager.findAndDelete(params, model);
 
     ctx.body = results.map((result) =>

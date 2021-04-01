@@ -41,22 +41,21 @@ export const initialState = {
     total: 0,
   },
   permisition: -1,
+  //cus
+  createdbyValue: {},
 };
 
 const listViewReducer = (state = initialState, action) =>
   // eslint-disable-next-line consistent-return
   produce(state, (drafState) => {
-    console.log(state);
+    // console.log(state);
     switch (action.type) {
       case ON_CHANGE_USER_CREATE: {
+        console.log("ok");
         // drafState.data[action.target.id].create_by
-        drafState.data = drafState.data.map((item) => {
-          if (item.id == action.target.id) {
-            item.created_by = { ...item.created_by, ...action.target.value };
-            return item;
-          }
-        });
+        drafState.createdbyValue = action.value;
         // console.log(action.target.id);
+        break;
       }
       case ON_SET_PERMISSION: {
         drafState.permisition = action.id;

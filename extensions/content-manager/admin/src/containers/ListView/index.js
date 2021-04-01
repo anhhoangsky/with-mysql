@@ -71,6 +71,7 @@ function ListView({
   //cus
   onChangeUserCreate,
   addRelation,
+  createdbyValue,
   //
   didDeleteData,
   entriesToDelete,
@@ -320,6 +321,7 @@ function ListView({
   ]);
 
   const handleClickDelete = (id) => {
+    // strapi.notification.toggle({type: "info", link:{}});
     setIdToDelete(id);
     toggleModalDelete();
   };
@@ -410,7 +412,7 @@ function ListView({
 
   const handleChange = useCallback(async (e, shouldSetInitialValue = false) => {
     console.log(e);
-    // onChangeUserCreate(e);
+    onChangeUserCreate(e.value);
     await request(
       getRequestUrl(`collection-types/${slug}/updatecreatedby/${e.id}`),
       {
@@ -437,6 +439,7 @@ function ListView({
         toggleModalDeleteAll={handleToggleModalDeleteAll}
         setQuery={setQuery}
         //cus
+        createdbyValue={createdbyValue}
         addRelation={handleAddRelation}
         isCreatingEntry={false}
         onChangeUserCreate={handleChange}

@@ -88,7 +88,7 @@ function Row({
                       relationType: "manyToOne",
                     },
                     metadatas: {
-                      label: "username",
+                      label: "Chọn người tạo",
                       description: "",
                       placeholder: "Chọn user",
                       visible: true,

@@ -41,15 +41,16 @@ function SelectWrapper({
   ]);
   const {
     addRelation,
-    data,
+    // data,
     moveRelation,
     onChangeUserCreate,
     onRemoveRelation,
+    createdbyValue,
   } = useDataManager();
-  console.log(data);
+  console.log(useDataManager());
   const { pathname } = useLocation();
-  const value = get(data[0].created_by, name, null);
-
+  // const value = get(data[0].created_by, name, null);
+  const value = createdbyValue;
   // console.log(typeof value);
   const [state, setState] = useState(initialPaginationState);
   const [options, setOptions] = useState([]);
@@ -208,7 +209,6 @@ function SelectWrapper({
       name,
       value: value ? value.value : value,
       ...defaultParams,
-      data,
     });
   };
 
