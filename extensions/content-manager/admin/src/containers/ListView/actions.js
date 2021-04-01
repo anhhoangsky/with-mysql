@@ -88,7 +88,7 @@ export const onChangeListHeaders = (target) => ({
   target,
 });
 
-export const onChangeUserCreate = (target) => ({
+export const onChangeUserCreate = (value) => ({
   type: ON_CHANGE_USER_CREATE,
-  target,
+  value,
 });

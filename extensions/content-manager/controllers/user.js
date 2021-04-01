@@ -9,7 +9,7 @@ module.exports = {
       "findPage"
     ]({ pageSize: "10", page: "1", _sort: "firstname:ASC" });
     const { id } = query;
-    console.log(results, id);
+    // console.log(results, id);
     ctx.body = results.map(pick(["username", "id"]));
   },
 };
